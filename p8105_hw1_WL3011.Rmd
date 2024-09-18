@@ -1,0 +1,18 @@
+---
+title: "p8105_hw1_WL3011"
+author: "Weiqi Liang"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+# Problem 1
+```{r problem1}
+library(palmerpenguins)
+data("penguins", package = "palmerpenguins")
+```
+
+```{r}
+
+```
+
+
