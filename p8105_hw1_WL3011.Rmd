@@ -6,13 +6,28 @@ date: "`r Sys.Date()`"
 ---
 
 # Problem 1
-```{r problem1}
+Firstly, the **penguins** dataset and the **palmerpenguins** package are loaded.
+```{r setup, results='hide'}
+# Load the penguins dataset
 library(palmerpenguins)
 data("penguins", package = "palmerpenguins")
 ```
 
-```{r}
+## 1.1 Description of Penguins Dataset
+The **penguins** dataset consists of **344** observations about 3 species of penguins: **Adelie**, **Gentoo**, and **Chinstrap**. 
 
+It includes following **8** important variables: `r names(penguins)`.
+
+Besides, it has `r nrow(penguins)` rows and `r ncol(penguins)` columns. All penguins' average flipper length is `r mean(penguins$flipper_length_mm, na.rm = TRUE)` mm.
+```{r collapse=TRUE}
+names(penguins)
+nrow(penguins)
+ncol(penguins)
+mean(penguins$flipper_length_mm, na.rm = TRUE)
 ```
+
+## 1.2 Description of Penguins Dataset
+
+
 
 
