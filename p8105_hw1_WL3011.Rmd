@@ -57,6 +57,41 @@ ggsave("penguins_scatterplot.png", plot = p)
 
 ```
 
+# 2. Problem 2
+
+## 2.1 Create Data Frame
+
+Firstly, create a data frame as follows:
+
+```{r}
+library(tidyverse)
+set.seed(3011)
+samp_df = tibble(
+  norm_samp = rnorm(10),
+  norm_samp_flag = norm_samp > 0,
+  char_vector = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"),
+  factor_vector = factor(rep(c("Level1", "Level2", "Level3"), 
+                             length.out = 10))
+)
+print(samp_df)
+```
+
+## 2.2 Take the Mean of Each Variable
+
+The mean of numeric variables (**norm_samp**) and logical variables (**norm_samp_flag**) will work.
+```{r collapse=TRUE}
+mean(pull(samp_df, norm_samp)) 
+mean(pull(samp_df, norm_samp_flag)) 
+```
+
+While The character and factor variables cannot have a mean calculated since they are strings instead of numeric.
+```{r eval=FALSE}
+mean(pull(samp_df, char_vector)) 
+mean(pull(samp_df, factor_vector)) 
+```
+
+
+
 
 
 
