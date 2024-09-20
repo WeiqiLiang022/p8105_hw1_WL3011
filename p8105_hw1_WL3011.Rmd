@@ -84,7 +84,7 @@ mean(pull(samp_df, norm_samp))
 mean(pull(samp_df, norm_samp_flag)) 
 ```
 
-While The character and factor variables cannot have a mean calculated since they are strings instead of numeric.
+While the character (**char_vector**) and factor (**factor_vector**) variables cannot have a mean calculated since they are strings instead of numeric.
 ```{r eval=FALSE}
 mean(pull(samp_df, char_vector)) 
 mean(pull(samp_df, factor_vector)) 
