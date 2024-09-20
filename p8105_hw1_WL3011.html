@@ -364,6 +364,7 @@ display: none;
 <pre class="r"><code># Load the penguins dataset
 library(palmerpenguins)
 library(ggplot2)
+library(dplyr)
 data(&quot;penguins&quot;, package = &quot;palmerpenguins&quot;)</code></pre>
 <div id="description-of-penguins-dataset" class="section level2">
 <h2>1.1 Description of Penguins Dataset</h2>
@@ -384,7 +385,7 @@ nrow(penguins)
 ## [1] 344
 ncol(penguins)
 ## [1] 8
-mean(penguins$flipper_length_mm, na.rm = TRUE)
+mean(pull(penguins,flipper_length_mm), na.rm = TRUE)
 ## [1] 200.9152</code></pre>
 </div>
 <div id="flipper-length-vs-bill-length" class="section level2">
@@ -416,51 +417,76 @@ ggsave(&quot;penguins_scatterplot.png&quot;, plot = p)</code></pre>
 <div id="create-data-frame" class="section level2">
 <h2>2.1 Create Data Frame</h2>
 <p>Firstly, create a data frame as follows:</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-## ✔ purrr     1.0.2     ✔ tidyr     1.3.1
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>set.seed(3011)
+<pre class="r"><code>library(tidyverse)
+set.seed(3011)
 samp_df = tibble(
   norm_samp = rnorm(10),
   norm_samp_flag = norm_samp &gt; 0,
   char_vector = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;, &quot;I&quot;, &quot;J&quot;),
-  factor_vector = factor(rep(c(&quot;Level1&quot;, &quot;Level2&quot;, &quot;Level3&quot;), 
+  factor_vector = factor(rep(c(&quot;Level5&quot;, &quot;Level2&quot;, &quot;Level3&quot;), 
                              length.out = 10))
-)
-print(samp_df)</code></pre>
+)</code></pre>
+<pre class="r"><code>print(samp_df)</code></pre>
 <pre><code>## # A tibble: 10 × 4
 ##    norm_samp norm_samp_flag char_vector factor_vector
 ##        &lt;dbl&gt; &lt;lgl&gt;          &lt;chr&gt;       &lt;fct&gt;        
-##  1    -0.664 FALSE          A           Level1       
+##  1    -0.664 FALSE          A           Level5       
 ##  2    -2.16  FALSE          B           Level2       
 ##  3    -0.265 FALSE          C           Level3       
-##  4     2.14  TRUE           D           Level1       
+##  4     2.14  TRUE           D           Level5       
 ##  5    -1.24  FALSE          E           Level2       
 ##  6    -0.206 FALSE          F           Level3       
-##  7    -0.591 FALSE          G           Level1       
+##  7    -0.591 FALSE          G           Level5       
 ##  8     1.29  TRUE           H           Level2       
 ##  9     0.757 TRUE           I           Level3       
-## 10    -1.49  FALSE          J           Level1</code></pre>
+## 10    -1.49  FALSE          J           Level5</code></pre>
 </div>
 <div id="take-the-mean-of-each-variable" class="section level2">
 <h2>2.2 Take the Mean of Each Variable</h2>
-<p>The mean of numeric variables (<strong>norm_samp</strong>) and
-logical variables (<strong>norm_samp_flag</strong>) will work.</p>
+<p>The mean of numeric variables (<code>norm_samp</code>) and logical
+variables (<code>norm_samp_flag</code>) will work.</p>
 <pre class="r"><code>mean(pull(samp_df, norm_samp)) 
 ## [1] -0.2426275
 mean(pull(samp_df, norm_samp_flag)) 
 ## [1] 0.3</code></pre>
-<p>While The character and factor variables cannot have a mean
-calculated since they are strings instead of numeric.</p>
+<p>While the character (<code>char_vector</code>) and factor
+(<code>factor_vector</code>) variables cannot have a mean calculated
+since they are strings instead of numeric or logical variables.</p>
 <pre class="r"><code>mean(pull(samp_df, char_vector)) 
 mean(pull(samp_df, factor_vector)) </code></pre>
+</div>
+<div id="convert-variables" class="section level2">
+<h2>2.3 Convert Variables</h2>
+<ul>
+<li>Logical values <strong>TRUE</strong> and <strong>FALSE</strong> are
+treated as <strong>1</strong> and <strong>0</strong>, respectively.
+Therefore the mean of logical variables can work.</li>
+<li>The conversion of character variables will result in
+<strong>NA</strong> values and a warning message like “NAs introduced by
+coercion”.</li>
+<li>The conversion of factor variable works, but it may not represent
+meaningful numeric values. In this case, <strong>Level5</strong>,
+<strong>Level2</strong>, and <strong>Level3</strong> are converted to
+numeric values <strong>3</strong>, <strong>1</strong>, and
+<strong>2</strong> respectively. This means that it converts the
+ascending order of Level to numeric values.</li>
+</ul>
+<pre class="r"><code>as.numeric(pull(samp_df,norm_samp_flag))
+##  [1] 0 0 0 1 0 0 0 1 1 0
+as.numeric(pull(samp_df,char_vector)) 
+##  [1] NA NA NA NA NA NA NA NA NA NA
+as.numeric(pull(samp_df,factor_vector))
+##  [1] 3 1 2 3 1 2 3 1 2 3</code></pre>
+<p>This helps explain why:</p>
+<ul>
+<li>Logical variables can be coerced into numeric values and their means
+can be calculated.</li>
+<li>Character variables cannot be coerced to numeric. Therefore the mean
+of character variables cannot work.</li>
+<li>Factor variables can be converted into numeric values, however not
+in a meaningful way. After a forced conversion of
+<code>as.numeric</code>, the mean can be calculated.</li>
+</ul>
 </div>
 </div>
 

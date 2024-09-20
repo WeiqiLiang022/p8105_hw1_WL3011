@@ -9,10 +9,11 @@ date: "`r Sys.Date()`"
 
 Firstly, the **penguins** dataset and the **palmerpenguins** package are loaded.
 
-```{r setup, results='hide'}
+```{r setup, message = FALSE, results='hide'}
 # Load the penguins dataset
 library(palmerpenguins)
 library(ggplot2)
+library(dplyr)
 data("penguins", package = "palmerpenguins")
 ```
 
@@ -22,13 +23,13 @@ The **penguins** dataset consists of **344** observations about 3 species of pen
 
 It includes following **8** important variables: `r names(penguins)`.
 
-Besides, it has `r nrow(penguins)` rows and `r ncol(penguins)` columns. All penguins' average flipper length is `r mean(penguins$flipper_length_mm, na.rm = TRUE)` mm.
+Besides, it has `r nrow(penguins)` rows and `r ncol(penguins)` columns. All penguins' average flipper length is `r mean(pull(penguins,flipper_length_mm), na.rm = TRUE)` mm.
 
 ```{r collapse=TRUE}
 names(penguins)
 nrow(penguins)
 ncol(penguins)
-mean(penguins$flipper_length_mm, na.rm = TRUE)
+mean(pull(penguins,flipper_length_mm), na.rm = TRUE)
 ```
 
 ## 1.2 Flipper Length vs Bill Length
@@ -63,33 +64,52 @@ ggsave("penguins_scatterplot.png", plot = p)
 
 Firstly, create a data frame as follows:
 
-```{r}
+```{r message = FALSE}
 library(tidyverse)
 set.seed(3011)
 samp_df = tibble(
   norm_samp = rnorm(10),
   norm_samp_flag = norm_samp > 0,
   char_vector = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"),
-  factor_vector = factor(rep(c("Level1", "Level2", "Level3"), 
+  factor_vector = factor(rep(c("Level5", "Level2", "Level3"), 
                              length.out = 10))
 )
+```
+
+```{r}
 print(samp_df)
 ```
 
+
 ## 2.2 Take the Mean of Each Variable
 
-The mean of numeric variables (**norm_samp**) and logical variables (**norm_samp_flag**) will work.
+The mean of numeric variables (`norm_samp`) and logical variables (`norm_samp_flag`) will work.
 ```{r collapse=TRUE}
 mean(pull(samp_df, norm_samp)) 
 mean(pull(samp_df, norm_samp_flag)) 
 ```
 
-While the character (**char_vector**) and factor (**factor_vector**) variables cannot have a mean calculated since they are strings instead of numeric.
+While the character (`char_vector`) and factor (`factor_vector`) variables cannot have a mean calculated since they are strings instead of numeric or logical variables.
 ```{r eval=FALSE}
 mean(pull(samp_df, char_vector)) 
 mean(pull(samp_df, factor_vector)) 
 ```
 
+## 2.3 Convert Variables 
+*   Logical values **TRUE** and **FALSE** are treated as **1** and **0**, respectively. Therefore the mean of logical variables can work.
+*   The conversion of character variables will result in **NA** values and a warning message like "NAs introduced by coercion".
+*   The conversion of factor variable works, but it may not represent meaningful numeric values. In this case, **Level5**, **Level2**, and **Level3** are converted to numeric values **3**, **1**, and **2** respectively. This means that it converts the ascending order of Level to numeric values.
+```{r warning = FALSE, collapse=TRUE}
+as.numeric(pull(samp_df,norm_samp_flag))
+as.numeric(pull(samp_df,char_vector)) 
+as.numeric(pull(samp_df,factor_vector))
+
+```
+This helps explain why:
+
+*   Logical variables can be converted into numeric values and their means can be calculated.
+*   Character variables cannot be converted to numeric. Therefore the mean of character variables cannot work.
+*   Factor variables can be converted into numeric values, however not in a meaningful way. After a forced conversion of ` as.numeric`, the mean can be calculated.
 
 
 
